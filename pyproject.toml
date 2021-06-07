@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "computer-vision-final-project"
+version = "0.0.0"
+description = "computer-vision-final-project"
+authors = ["Karan Patel <karanpatel4567@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "3.8.*"
+
+tensorflow = ">= 2.5"
+tensorflow-hub = "*"
+tensorflow-datasets = "*"
+opencv-python = "*"
+matplotlib = "*"
+scipy = "*"
+
+[tool.poetry.dev-dependencies]
+pylint = "*"
+black = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
