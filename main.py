@@ -7,6 +7,8 @@ import tensorflow_datasets as tfds
 import tensorflow_hub as hub
 from object_detection.utils import visualization_utils as viz_utils
 
+from all_models import ALL_MODELS
+
 tf.get_logger().setLevel("ERROR")
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -20,46 +22,48 @@ print("loading dataset ...")
 coco_dataset = tfds.load("coco_captions", split="train[:5%]")
 print("dataset loaded! : {}".format(coco_dataset))
 
-print("loading model...")
-module_handle = (
-    "https://tfhub.dev/tensorflow/faster_rcnn/inception_resnet_v2_1024x1024/1"
-)
-hub_model = hub.load(module_handle)
-print("model loaded!")
+for model in ["Faster R-CNN Inception ResNet V2 1024x1024"]:
 
-for sample in coco_dataset:
-    print(
-        "Following are keys associated with each sample from coco dataset: {}",
-        list(sample.keys()),
+    print("loading model {} ...".format(model))
+    module_handle = (
+        ALL_MODELS[model]
     )
+    hub_model = hub.load(module_handle)
+    print("model loaded!")
 
-    captions = sample["captions"]
-    image = sample["image"]
-    image_file_name = sample["image/filename"]
-    image_id = sample["image/id"]
-    objects = sample["objects"]
+    for sample in coco_dataset:
+        print(
+            "Following are keys associated with each sample from coco dataset: {}",
+            list(sample.keys()),
+        )
 
-    cv2.imwrite(os.path.join(dir_path, "output", "original.png"), image.numpy())
+        captions = sample["captions"]
+        image = sample["image"]
+        image_file_name = sample["image/filename"]
+        image_id = sample["image/id"]
+        objects = sample["objects"]
 
-    result = hub_model(tf.expand_dims(image, axis=0))
+        cv2.imwrite(os.path.join(dir_path, "output", "original.png"), image.numpy())
 
-    label_id_offset = 0
-    image_np_with_detections = image.numpy().copy()
+        result = hub_model(tf.expand_dims(image, axis=0))
 
-    viz_utils.visualize_boxes_and_labels_on_image_array(
-        image_np_with_detections,
-        result["detection_boxes"][0].numpy(),
-        result["detection_classes"][0].numpy().astype(int),
-        result["detection_scores"][0].numpy(),
-        category_index,
-        use_normalized_coordinates=True,
-        max_boxes_to_draw=200,
-        min_score_thresh=0.30,
-        agnostic_mode=False,
-    )
+        label_id_offset = 0
+        image_np_with_detections = image.numpy().copy()
 
-    cv2.imwrite(
-        os.path.join(dir_path, "output", "output-image.png"), image_np_with_detections
-    )
+        viz_utils.visualize_boxes_and_labels_on_image_array(
+            image_np_with_detections,
+            result["detection_boxes"][0].numpy(),
+            result["detection_classes"][0].numpy().astype(int),
+            result["detection_scores"][0].numpy(),
+            category_index,
+            use_normalized_coordinates=True,
+            max_boxes_to_draw=200,
+            min_score_thresh=0.30,
+            agnostic_mode=False,
+        )
 
-    break
+        cv2.imwrite(
+            os.path.join(dir_path, "output", "output-image.png"), image_np_with_detections
+        )
+
+        break
