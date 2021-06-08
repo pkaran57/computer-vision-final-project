@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 tf.get_logger().setLevel("ERROR")
 
 print("loading dataset ...")
+# https://www.tensorflow.org/datasets/catalog/coco_captions
 coco_dataset = tfds.load("coco_captions", split="train[:5%]")
 print("dataset loaded! : {}".format(coco_dataset))
 
