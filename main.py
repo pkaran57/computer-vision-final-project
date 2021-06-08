@@ -1,14 +1,17 @@
 import json
+import os
 
+import cv2
 import tensorflow as tf
 import tensorflow_datasets as tfds
 import tensorflow_hub as hub
-from matplotlib import pyplot as plt
 from object_detection.utils import visualization_utils as viz_utils
 
 tf.get_logger().setLevel("ERROR")
 
-with open('label-map.json') as json_file:
+dir_path = os.path.dirname(os.path.realpath(__file__))
+
+with open(os.path.join(dir_path, 'data', 'label-map.json')) as json_file:
     category_index = json.load(json_file)
 
 print("loading dataset ...")
@@ -33,8 +36,10 @@ for sample in coco_dataset:
     image_id = sample["image/id"]
     objects = sample["objects"]
 
-    plt.imshow(image.numpy())
-    plt.show()
+    cv2.imwrite(os.path.join(dir_path, 'output', 'original.png'), image.numpy())
+
+    # plt.plot(image.numpy())
+    # plt.savefig(os.path.join(dir_path, 'output', 'original.png'))
 
     result = hub_model(tf.expand_dims(image, axis=0))
 
@@ -62,8 +67,11 @@ for sample in coco_dataset:
             keypoints=keypoints)
         # keypoint_edges=COCO17_HUMAN_POSE_KEYPOINTS)
 
-        plt.figure(figsize=(24, 32))
-        plt.imshow(image_np_with_detections)
-        plt.show()
+        # plt.figure(figsize=(24, 32))
+        # plt.plot(image_np_with_detections)
+        # plt.savefig(os.path.join(dir_path, 'output', 'output-image.png'))
+        # plt.show()
+
+        cv2.imwrite(os.path.join(dir_path, 'output', 'output-image.png'), image_np_with_detections)
 
     break
