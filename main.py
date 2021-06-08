@@ -41,21 +41,10 @@ for sample in coco_dataset:
 
     cv2.imwrite(os.path.join(dir_path, "output", "original.png"), image.numpy())
 
-    # plt.plot(image.numpy())
-    # plt.savefig(os.path.join(dir_path, 'output', 'original.png'))
-
     result = hub_model(tf.expand_dims(image, axis=0))
 
-    print("test")
-    #
     label_id_offset = 0
     image_np_with_detections = image.numpy().copy()
-
-    # Use keypoints if available in detections
-    # keypoints, keypoint_scores = None, None
-    # if 'detection_keypoints' in result:
-    #     keypoints = result['detection_keypoints'][0]
-    #     keypoint_scores = result['detection_keypoint_scores'][0]
 
     viz_utils.visualize_boxes_and_labels_on_image_array(
         image_np_with_detections,
@@ -68,13 +57,6 @@ for sample in coco_dataset:
         min_score_thresh=0.30,
         agnostic_mode=False,
     )
-    # keypoints=keypoints)
-    # keypoint_edges=COCO17_HUMAN_POSE_KEYPOINTS)
-
-    # plt.figure(figsize=(24, 32))
-    # plt.plot(image_np_with_detections)
-    # plt.savefig(os.path.join(dir_path, 'output', 'output-image.png'))
-    # plt.show()
 
     cv2.imwrite(
         os.path.join(dir_path, "output", "output-image.png"), image_np_with_detections
