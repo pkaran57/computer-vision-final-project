@@ -11,8 +11,9 @@ tf.get_logger().setLevel("ERROR")
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
-with open(os.path.join(dir_path, 'data', 'label-map.json')) as json_file:
+with open(os.path.join(dir_path, "data", "label-map.json")) as json_file:
     category_index = json.load(json_file)
+    category_index = {int(k): v for k, v in category_index.items()}
 
 print("loading dataset ...")
 # https://www.tensorflow.org/datasets/catalog/coco_captions
@@ -20,9 +21,11 @@ coco_dataset = tfds.load("coco_captions", split="train[:5%]")
 print("dataset loaded! : {}".format(coco_dataset))
 
 print("loading model...")
-module_handle = 'https://tfhub.dev/tensorflow/faster_rcnn/inception_resnet_v2_1024x1024/1'
+module_handle = (
+    "https://tfhub.dev/tensorflow/faster_rcnn/inception_resnet_v2_1024x1024/1"
+)
 hub_model = hub.load(module_handle)
-print('model loaded!')
+print("model loaded!")
 
 for sample in coco_dataset:
     print(
@@ -36,14 +39,14 @@ for sample in coco_dataset:
     image_id = sample["image/id"]
     objects = sample["objects"]
 
-    cv2.imwrite(os.path.join(dir_path, 'output', 'original.png'), image.numpy())
+    cv2.imwrite(os.path.join(dir_path, "output", "original.png"), image.numpy())
 
     # plt.plot(image.numpy())
     # plt.savefig(os.path.join(dir_path, 'output', 'original.png'))
 
     result = hub_model(tf.expand_dims(image, axis=0))
 
-    print('test')
+    print("test")
     #
     label_id_offset = 0
     image_np_with_detections = image.numpy().copy()
@@ -56,14 +59,15 @@ for sample in coco_dataset:
 
     viz_utils.visualize_boxes_and_labels_on_image_array(
         image_np_with_detections,
-        result['detection_boxes'][0].numpy(),
-        result['detection_classes'][0].numpy().astype(int),
-        result['detection_scores'][0].numpy(),
+        result["detection_boxes"][0].numpy(),
+        result["detection_classes"][0].numpy().astype(int),
+        result["detection_scores"][0].numpy(),
         category_index,
         use_normalized_coordinates=True,
         max_boxes_to_draw=200,
-        min_score_thresh=.30,
-        agnostic_mode=False)
+        min_score_thresh=0.30,
+        agnostic_mode=False,
+    )
     # keypoints=keypoints)
     # keypoint_edges=COCO17_HUMAN_POSE_KEYPOINTS)
 
@@ -72,6 +76,8 @@ for sample in coco_dataset:
     # plt.savefig(os.path.join(dir_path, 'output', 'output-image.png'))
     # plt.show()
 
-    cv2.imwrite(os.path.join(dir_path, 'output', 'output-image.png'), image_np_with_detections)
+    cv2.imwrite(
+        os.path.join(dir_path, "output", "output-image.png"), image_np_with_detections
+    )
 
     break
