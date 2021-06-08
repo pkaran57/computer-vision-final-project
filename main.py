@@ -49,29 +49,29 @@ for sample in coco_dataset:
     image_np_with_detections = image.numpy().copy()
 
     # Use keypoints if available in detections
-    keypoints, keypoint_scores = None, None
-    if 'detection_keypoints' in result:
-        keypoints = result['detection_keypoints'][0]
-        keypoint_scores = result['detection_keypoint_scores'][0]
+    # keypoints, keypoint_scores = None, None
+    # if 'detection_keypoints' in result:
+    #     keypoints = result['detection_keypoints'][0]
+    #     keypoint_scores = result['detection_keypoint_scores'][0]
 
-        viz_utils.visualize_boxes_and_labels_on_image_array(
-            image_np_with_detections,
-            result['detection_boxes'][0],
-            (result['detection_classes'][0] + label_id_offset).astype(int),
-            result['detection_scores'][0],
-            category_index,
-            use_normalized_coordinates=True,
-            max_boxes_to_draw=200,
-            min_score_thresh=.30,
-            agnostic_mode=False,
-            keypoints=keypoints)
-        # keypoint_edges=COCO17_HUMAN_POSE_KEYPOINTS)
+    viz_utils.visualize_boxes_and_labels_on_image_array(
+        image_np_with_detections,
+        result['detection_boxes'][0].numpy(),
+        result['detection_classes'][0].numpy().astype(int),
+        result['detection_scores'][0].numpy(),
+        category_index,
+        use_normalized_coordinates=True,
+        max_boxes_to_draw=200,
+        min_score_thresh=.30,
+        agnostic_mode=False)
+    # keypoints=keypoints)
+    # keypoint_edges=COCO17_HUMAN_POSE_KEYPOINTS)
 
-        # plt.figure(figsize=(24, 32))
-        # plt.plot(image_np_with_detections)
-        # plt.savefig(os.path.join(dir_path, 'output', 'output-image.png'))
-        # plt.show()
+    # plt.figure(figsize=(24, 32))
+    # plt.plot(image_np_with_detections)
+    # plt.savefig(os.path.join(dir_path, 'output', 'output-image.png'))
+    # plt.show()
 
-        cv2.imwrite(os.path.join(dir_path, 'output', 'output-image.png'), image_np_with_detections)
+    cv2.imwrite(os.path.join(dir_path, 'output', 'output-image.png'), image_np_with_detections)
 
     break
