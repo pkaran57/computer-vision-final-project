@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
             original_image = sample["image"]
             cv2.imwrite(
-                os.path.join(OUTPUT_DIR, "{}-original-{}.png".format(model_name, img_counter)),
+                os.path.join(OUTPUT_DIR, "original-{}.png".format(img_counter)),
                 original_image.numpy(),
             )
 
