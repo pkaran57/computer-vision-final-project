@@ -62,7 +62,7 @@ if __name__ == "__main__":
 
             original_image = sample["image"]
             cv2.imwrite(
-                os.path.join(OUTPUT_DIR, "{}-original.png".format(model_name)),
+                os.path.join(OUTPUT_DIR, "{}-original-{}.png".format(model_name, img_counter)),
                 original_image.numpy(),
             )
 
@@ -71,7 +71,7 @@ if __name__ == "__main__":
             image_with_predictions = get_image_with_predictions(original_image, result)
 
             cv2.imwrite(
-                os.path.join(OUTPUT_DIR, "{}-output-image.png".format(model_name)),
+                os.path.join(OUTPUT_DIR, "{}-output-image-{}.png".format(model_name, img_counter)),
                 image_with_predictions,
             )
 
