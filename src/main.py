@@ -44,10 +44,22 @@ if __name__ == "__main__":
     category_index = get_category_index()
     coco_dataset = load_dataset()
 
-    for model_name in ["Faster R-CNN Inception ResNet V2 1024x1024"]:
+    for model_name in [
+        "Faster R-CNN Inception ResNet V2 1024x1024",
+        "CenterNet HourGlass104 1024x1024",
+        "EfficientDet D4 1024x1024",
+        "SSD ResNet152 V1 FPN 1024x1024 (RetinaNet152)",
+        "Mask R-CNN Inception ResNet V2 1024x1024",
+    ]:
         hub_model = load_tf_hub_model(model_name)
 
+        num_of_images = 5
+        img_counter = 0
+
         for sample in coco_dataset:
+            if img_counter == 5:
+                break
+
             original_image = sample["image"]
             cv2.imwrite(
                 os.path.join(OUTPUT_DIR, "{}-original.png".format(model_name)),
@@ -63,4 +75,4 @@ if __name__ == "__main__":
                 image_with_predictions,
             )
 
-            break
+            img_counter += 1
