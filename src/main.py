@@ -76,12 +76,6 @@ if __name__ == "__main__":
                 image_with_predictions,
             )
 
-            # captions = sample["captions"]
-            # image = sample["image"]
-            # image_file_name = sample["image/filename"]
-            # image_id = sample["image/id"]
-            # objects = sample["objects"]
-
             precision, recall = overall(sample["objects"], result, (sample['image'].shape[0], sample['image'].shape[1]))
             print(precision, recall)
 
