@@ -7,7 +7,7 @@ from src.definitions import DATA_DIR
 
 
 def get_category_index():
-    with open(os.path.join(DATA_DIR, "label-map.json")) as json_file:
+    with open(os.path.join(DATA_DIR, "updated-label-map.json")) as json_file:
         category_index = json.load(json_file)
         return {int(k): v for k, v in category_index.items()}
 

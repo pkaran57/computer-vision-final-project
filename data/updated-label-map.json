@@ -1,0 +1,38 @@
+{
+  "61": {
+    "id": 61,
+    "name": "toilet"
+  },
+  "71": {
+    "id": 71,
+    "name": "sink"
+  },
+  "78": {
+    "id": 78,
+    "name": "hair drier"
+  },
+  "54": {
+    "id": 54,
+    "name": "donut"
+  },
+  "79": {
+    "id": 79,
+    "name": "toothbrush"
+  },
+  "41": {
+    "id": 41,
+    "name": "cup"
+  },
+  "0": {
+    "id": 0,
+    "name": "person"
+  },
+  "23": {
+    "id": 23,
+    "name": "giraffe"
+  },
+  "13": {
+    "id": 13,
+    "name": "bench"
+  }
+}

@@ -22,7 +22,7 @@ def load_tf_hub_model(model_name):
     return hub_model
 
 
-def get_image_with_predictions(original_image, result):
+def get_image_with_predictions(original_image, result, category_index):
     image_with_predictions = original_image.numpy().copy()
 
     viz_utils.visualize_boxes_and_labels_on_image_array(
@@ -46,7 +46,6 @@ if __name__ == "__main__":
     coco_dataset = load_dataset()
 
     for model_name in [
-        "SSD MobileNet v2 320x320",
         "Faster R-CNN Inception ResNet V2 1024x1024",
         "CenterNet HourGlass104 1024x1024",
         "EfficientDet D4 1024x1024",
@@ -70,20 +69,20 @@ if __name__ == "__main__":
 
             result = hub_model(tf.expand_dims(original_image, axis=0))
 
-            image_with_predictions = get_image_with_predictions(original_image, result)
+            image_with_predictions = get_image_with_predictions(original_image, result, category_index)
 
             cv2.imwrite(
                 os.path.join(OUTPUT_DIR, "{}-output-image-{}.png".format(model_name, img_counter)),
                 image_with_predictions,
             )
 
-            img_counter += 1
-
-            captions = sample["captions"]
-            image = sample["image"]
-            image_file_name = sample["image/filename"]
-            image_id = sample["image/id"]
-            objects = sample["objects"]
+            # captions = sample["captions"]
+            # image = sample["image"]
+            # image_file_name = sample["image/filename"]
+            # image_id = sample["image/id"]
+            # objects = sample["objects"]
 
             precision, recall = overall(sample["objects"], result, (sample['image'].shape[0], sample['image'].shape[1]))
             print(precision, recall)
+
+            img_counter += 1
