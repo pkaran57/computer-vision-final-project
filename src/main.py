@@ -8,6 +8,7 @@ from object_detection.utils import visualization_utils as viz_utils
 from all_models import ALL_MODELS
 from src.dataset.coco import get_category_index, load_dataset
 from src.definitions import OUTPUT_DIR
+from src.metricFunctions import overall
 
 tf.get_logger().setLevel("ERROR")
 
@@ -45,6 +46,7 @@ if __name__ == "__main__":
     coco_dataset = load_dataset()
 
     for model_name in [
+        "SSD MobileNet v2 320x320",
         "Faster R-CNN Inception ResNet V2 1024x1024",
         "CenterNet HourGlass104 1024x1024",
         "EfficientDet D4 1024x1024",
@@ -76,3 +78,12 @@ if __name__ == "__main__":
             )
 
             img_counter += 1
+
+            captions = sample["captions"]
+            image = sample["image"]
+            image_file_name = sample["image/filename"]
+            image_id = sample["image/id"]
+            objects = sample["objects"]
+
+            precision, recall = overall(sample["objects"], result, (sample['image'].shape[0], sample['image'].shape[1]))
+            print(precision, recall)

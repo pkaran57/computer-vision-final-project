@@ -1,3 +1,6 @@
+import numpy as np
+
+
 def IoU(gtbbox, pbbox):
     # gtbbox = ground truth bbox, gotten from coco [left x, top y, width, height]
     # pbbox = predicted bbox, gotten from out program, altered to [left x, top y, width, height]
@@ -21,7 +24,7 @@ def IoU(gtbbox, pbbox):
 
 # for an individual picture
 # returns (precision, recall)
-def overall(gt, results, imShape, conThresh):
+def overall(gt, results, imShape, conThresh=0.5):
     # gt is the objects variable from the samples loop (main.py, ln 41)
     # results is the variable from (main.py, ln 44)
     # imShape is in y,x (height,width) format. If you get this from image_np.shape, it's in (1, height, width, 3), so just do (image_np.shape[1], image_np.shape[2]).
@@ -40,7 +43,7 @@ def overall(gt, results, imShape, conThresh):
     FP = 0
 
     # using threshold, get how many outputs we care about
-    numOverThresh = sum(result["detection_scores"][0] > conThresh)
+    numOverThresh = sum(results["detection_scores"][0].numpy() > conThresh)
 
     # retrieve labels/gtbboxes for objects in the pic
     gtlabels = gt[
@@ -54,21 +57,21 @@ def overall(gt, results, imShape, conThresh):
     print(gtbbox.shape[0])
 
     # retrieve results data from the program
-    pBbox = result["detection_boxes"][0][
+    pBbox = results["detection_boxes"][0].numpy()[
             :numOverThresh
-            ].numpy()  # should be in form [ymin, xmin, ymax, xmax]
-    pclasses = result["detection_classes"][0][:numOverThresh].astype(int)
+            ]  # should be in form [ymin, xmin, ymax, xmax]
+    pclasses = results["detection_classes"][0].numpy()[:numOverThresh].astype(int)
 
     # convert from model bbox output (pBbox) to useable output (pbox)
     pbox = np.zeros(numOverThresh * 4).reshape(numOverThresh, 4)
     for i in range(numOverThresh):
-        pbox[i][0] = pBbox[1] * im[0]  # x_min * image width
-        pbox[i][1] = pBbox[0] * im[1]  # y_min * image height
+        pbox[i][0] = pBbox[i][1] * im[0]  # x_min * image width
+        pbox[i][1] = pBbox[i][0] * im[1]  # y_min * image height
         pbox[i][2] = (
-                pBbox[3] * im[0] - pbox[i][0]
+                pBbox[i][3] * im[0] - pbox[i][0]
         )  # x_max * image width - x_min * image width = box width
         pbox[i][3] = (
-                pBbox[2] * im[1] - pbox[i][1]
+                pBbox[i][2] * im[1] - pbox[i][1]
         )  # y_max * image height - y_min * image height = box height
     # this should end with pbox[i] having format [xmin, ymin, width, height]
 
@@ -81,9 +84,9 @@ def overall(gt, results, imShape, conThresh):
             print(
                 "if these are coming out ALL false, switch the commented line and add label_id_offset to the function input"
             )
-            print(gtlabels[gt] == (result["detection_classes"][0][p]).astype(int))
+            print(gtlabels[gt] == (results["detection_classes"][0].numpy()[p]).astype(int))
 
-            if gtlabels[gt] == (result["detection_classes"][0][p]).astype(int):
+            if gtlabels[gt] == (results["detection_classes"][0].numpy()[p]).astype(int):
                 #      if (gtlabels[gt] == (result['detection_classes'][0][p] + label_id_offset).astype(int)): #label_id_offset is 0 in the main function and never gets changed, I don't think we need it
                 # check IoU, if >.5
                 if (
