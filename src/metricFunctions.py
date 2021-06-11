@@ -2,26 +2,28 @@ import numpy as np
 
 from src.dataset.coco import get_id_to_label_map_coco_dataset, get_label_to_id_map_coco_paper
 
+#this works if both gtbbox and pbbox are in [xmin,ymin,xmax,ymax] normalized form, and imShape is (x,y)
+def IoU(gtbbox, pbbox, imShape):
+  #final format = [left x, top y, right x, bottom y]
 
-def IoU(gtbbox, pbbox):
-    # gtbbox = ground truth bbox, gotten from coco [left x, top y, width, height]
-    # pbbox = predicted bbox, gotten from out program, altered to [left x, top y, width, height]
-    # final format = [left x, right x, top y, bottom y]
+  #gtnormalized -> pixels
+  gtBBox = [gtbbox[0]*imShape[0], gtbbox[1]*imShape[1], gtbbox[2]*imShape[0], gtbbox[3]*imShape[1]]
+  predBBox = [pbbox[0]*imShape[0], pbbox[1]*imShape[1], pbbox[2]*imShape[0], pbbox[3]*imShape[1]]
 
-    gtBBoxArea = gtbbox[2] * gtbbox[3]
-    gtBBox = [gtbbox[0], gtbbox[0] + gtbbox[2], gtbbox[1], gtbbox[1] + gtbbox[3]]
-    pBBoxArea = pbbox[2] * pbbox[3]
-    predBBox = [pbbox[0], pbbox[0] + pbbox[2], pbbox[1], pbbox[1] + pbbox[3]]
+  #gt area = width*height
+  gtBBoxArea = (gtBBox[2] - gtBBox[0]) * (gtBBox[3] - gtBBox[1])
+  pBBoxArea = (predBBox[2] - predBBox[0]) * (predBBox[3] - predBBox[1])
 
-    xIntLeft = max(gtBBox[0], predBBox[0])
-    xIntRight = min(gtBBox[1], predBBox[1])
-    yIntUp = max(gtBBox[2], predBBox[2])
-    yIntLow = min(gtBBox[3], predBBox[3])
+  xIntLeft = max(gtBBox[0], predBBox[0])
+  yIntUp = max(gtBBox[1], predBBox[1])
+  xIntRight = min(gtBBox[2], predBBox[2])
+  yIntLow = min(gtBBox[3], predBBox[3])
 
-    intArea = max(0, (xIntRight - xIntLeft)) * max(0, (yIntLow - yIntUp))
+  intArea = max(0, (xIntRight - xIntLeft)) * max(0, (yIntLow - yIntUp))
 
-    IoU = intArea / (gtBBoxArea + pBBoxArea - intArea)
-    return IoU
+  IoU = intArea / (gtBBoxArea + pBBoxArea - intArea)
+  return IoU
+   
 
 
 # for an individual picture
