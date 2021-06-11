@@ -1,3 +1,4 @@
+import os
 import time
 
 import pandas as pd
@@ -24,7 +25,7 @@ if __name__ == "__main__":
     ]:
         hub_model = load_tf_hub_model(model_name)
 
-        num_of_images = 100
+        num_of_images = 50
         img_counter = 0
 
         model_to_inference_time[model_name] = []
@@ -42,4 +43,4 @@ if __name__ == "__main__":
 
             img_counter += 1
 
-    pd.DataFrame(model_to_inference_time).to_csv(OUTPUT_DIR, 'inference_times_across_models.csv', index=False)
+    pd.DataFrame(model_to_inference_time).to_csv(os.path.join(OUTPUT_DIR, 'inference_times_across_models.csv'), index=False)
