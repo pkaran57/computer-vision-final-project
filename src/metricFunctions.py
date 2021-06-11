@@ -10,7 +10,7 @@ def IoU(gtbbox, pbbox, imShape):
 
   #gtnormalized -> pixels
   gtBBox = [gtbbox[0]*imShape[0], gtbbox[1]*imShape[1], gtbbox[2]*imShape[0], gtbbox[3]*imShape[1]]
-  predBBox = [pbbox[0], pbbox[1], pbbox[2], pbbox[3]]
+  predBBox = [pbbox[0], pbbox[1], pbbox[2]+pbbox[0], pbbox[3]+pbbox[1]]
 
   #gt area = width*height
   gtBBoxArea = (gtBBox[2] - gtBBox[0]) * (gtBBox[3] - gtBBox[1])
