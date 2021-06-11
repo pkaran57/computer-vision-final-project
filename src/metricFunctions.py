@@ -5,10 +5,12 @@ from src.dataset.coco import get_id_to_label_map_coco_dataset, get_label_to_id_m
 #this works if both gtbbox and pbbox are in [xmin,ymin,xmax,ymax] normalized form, and imShape is (x,y)
 def IoU(gtbbox, pbbox, imShape):
   #final format = [left x, top y, right x, bottom y]
+  #pbbox should be in pixels
+  #gtbbox should be normalized
 
   #gtnormalized -> pixels
   gtBBox = [gtbbox[0]*imShape[0], gtbbox[1]*imShape[1], gtbbox[2]*imShape[0], gtbbox[3]*imShape[1]]
-  predBBox = [pbbox[0]*imShape[0], pbbox[1]*imShape[1], pbbox[2]*imShape[0], pbbox[3]*imShape[1]]
+  predBBox = [pbbox[0], pbbox[1], pbbox[2], pbbox[3]]
 
   #gt area = width*height
   gtBBoxArea = (gtBBox[2] - gtBBox[0]) * (gtBBox[3] - gtBBox[1])
@@ -77,7 +79,7 @@ def overall(gt, results, imShape, conThresh=0.5):
         pbox[i][3] = (
                 pBbox[i][2] * im[1] - pbox[i][1]
         )  # y_max * image height - y_min * image height = box height
-    # this should end with pbox[i] having format [xmin, ymin, width, height]
+    # this should end with pbox[i] having format [xmin, ymin, width, height] pixel
 
     id_to_label_map_coco_dataset = get_id_to_label_map_coco_dataset()
     label_to_id_map_coco_paper = get_label_to_id_map_coco_paper()
