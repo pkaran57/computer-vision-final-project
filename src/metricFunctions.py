@@ -101,7 +101,7 @@ def overall(gt, results, imShape, conThresh=0.5):
                 #      if (gtlabels[gt] == (result['detection_classes'][0][p] + label_id_offset).astype(int)): #label_id_offset is 0 in the main function and never gets changed, I don't think we need it
                 # check IoU, if >.5
                 if (
-                        IoU(gtbbox[gt], pbox[p]) > 0.5
+                        IoU(gtbbox[gt], pbox[p], im) > 0.5
                 ):  # using .5 as the threshold for what is an acceptable IoU,
                     TP += 1
     # set the false positives to be equal to the number of pboxes that haven't been a TP for a gtbbox
