@@ -1,3 +1,4 @@
+import json
 import os
 
 import cv2
@@ -45,6 +46,8 @@ if __name__ == "__main__":
     category_index = get_category_index()
     coco_dataset = load_dataset()
 
+    image_to_model_to_precision_recall_map = dict()
+
     for model_name in [
         "Faster R-CNN Inception ResNet V2 1024x1024",
         "CenterNet HourGlass104 1024x1024",
@@ -62,10 +65,14 @@ if __name__ == "__main__":
                 break
 
             original_image = sample["image"]
+            original_image_name = "original-{}.png".format(img_counter)
             cv2.imwrite(
-                os.path.join(OUTPUT_DIR, "original-{}.png".format(img_counter)),
+                os.path.join(OUTPUT_DIR, original_image_name),
                 original_image.numpy(),
             )
+
+            if original_image_name not in image_to_model_to_precision_recall_map:
+                image_to_model_to_precision_recall_map[original_image_name] = dict()
 
             result = hub_model(tf.expand_dims(original_image, axis=0))
 
@@ -77,6 +84,13 @@ if __name__ == "__main__":
             )
 
             precision, recall = overall(sample["objects"], result, (sample['image'].shape[0], sample['image'].shape[1]))
-            print(precision, recall)
+            print(f'precision = {precision}, recall = {recall}')
+
+            image_to_model_to_precision_recall_map[original_image_name][model_name] = dict()
+
+            image_to_model_to_precision_recall_map[original_image_name][model_name]['precision'] = precision
+            image_to_model_to_precision_recall_map[original_image_name][model_name]['recall'] = recall
 
             img_counter += 1
+
+    print("Final Result : \n\n", json.dumps(image_to_model_to_precision_recall_map))

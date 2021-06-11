@@ -1,5 +1,7 @@
 import numpy as np
 
+from src.dataset.coco import get_id_to_label_map_coco_dataset, get_label_to_id_map_coco_paper
+
 
 def IoU(gtbbox, pbbox):
     # gtbbox = ground truth bbox, gotten from coco [left x, top y, width, height]
@@ -75,18 +77,25 @@ def overall(gt, results, imShape, conThresh=0.5):
         )  # y_max * image height - y_min * image height = box height
     # this should end with pbox[i] having format [xmin, ymin, width, height]
 
+    id_to_label_map_coco_dataset = get_id_to_label_map_coco_dataset()
+    label_to_id_map_coco_paper = get_label_to_id_map_coco_paper()
+
     # determine which pbboxes to compare to which gtbboxs
     # for every gtbox
     for gt in range(gtbbox.shape[0]):
         # check the label of each pbox, if ==,
         for p in range(numOverThresh):
 
+            is_prediction_correct = label_to_id_map_coco_paper[id_to_label_map_coco_dataset[gtlabels[gt].numpy()]] + 1 == (results["detection_classes"][0].numpy()[p]).astype(
+                int)
+
             print(
                 "if these are coming out ALL false, switch the commented line and add label_id_offset to the function input"
             )
-            print(gtlabels[gt] == (results["detection_classes"][0].numpy()[p]).astype(int))
 
-            if gtlabels[gt] == (results["detection_classes"][0].numpy()[p]).astype(int):
+            print(is_prediction_correct)
+
+            if is_prediction_correct:
                 #      if (gtlabels[gt] == (result['detection_classes'][0][p] + label_id_offset).astype(int)): #label_id_offset is 0 in the main function and never gets changed, I don't think we need it
                 # check IoU, if >.5
                 if (
