@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 import cv2
 import tensorflow as tf
@@ -74,7 +75,13 @@ if __name__ == "__main__":
             if original_image_name not in image_to_model_to_precision_recall_map:
                 image_to_model_to_precision_recall_map[original_image_name] = dict()
 
-            result = hub_model(tf.expand_dims(original_image, axis=0))
+            model_input = tf.expand_dims(original_image, axis=0)
+
+            start_time = time.time()
+            result = hub_model(model_input)
+            end_time = time.time()
+
+            inference_time = end_time - start_time
 
             image_with_predictions = get_image_with_predictions(original_image, result, category_index)
 
@@ -88,6 +95,7 @@ if __name__ == "__main__":
 
             image_to_model_to_precision_recall_map[original_image_name][model_name] = dict()
 
+            image_to_model_to_precision_recall_map[original_image_name][model_name]['inference_time'] = inference_time
             image_to_model_to_precision_recall_map[original_image_name][model_name]['precision'] = precision
             image_to_model_to_precision_recall_map[original_image_name][model_name]['recall'] = recall
 
