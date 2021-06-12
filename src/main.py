@@ -83,10 +83,10 @@ if __name__ == "__main__":
 
             inference_time = end_time - start_time
 
-            image_with_predictions = get_image_with_predictions(original_image, result, category_index)
-
             # only output 5 images with prediction boxes overplayed on top of original images
             if img_counter < 5:
+                image_with_predictions = get_image_with_predictions(original_image, result, category_index)
+
                 cv2.imwrite(
                     os.path.join(OUTPUT_DIR, "{}-output-image-{}.png".format(model_name, img_counter)),
                     image_with_predictions,
