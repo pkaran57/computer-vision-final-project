@@ -92,15 +92,19 @@ if __name__ == "__main__":
                     image_with_predictions,
                 )
 
-            precision, recall = overall(sample["objects"], result, (sample['image'].shape[0], sample['image'].shape[1]))
-            print(f'precision = {precision}, recall = {recall}')
+            try:
+                precision, recall = overall(sample["objects"], result, (sample['image'].shape[0], sample['image'].shape[1]))
 
-            model_stats[model_name].append({
-                'image_name': original_image_name,
-                'inference_time': inference_time,
-                'precision': precision,
-                'recall': recall
-            })
+                print(f'precision = {precision}, recall = {recall}')
+
+                model_stats[model_name].append({
+                    'image_name': original_image_name,
+                    'inference_time': inference_time,
+                    'precision': precision,
+                    'recall': recall
+                })
+            except Exception as e:
+                print('Error: ', e)
 
             img_counter += 1
 
