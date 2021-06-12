@@ -107,7 +107,7 @@ def overall(gt, results, imShape, conThresh=0.5):
                 ):  # using .5 as the threshold for what is an acceptable IoU,
                     TP += 1
     # set the false positives to be equal to the number of pboxes that haven't been a TP for a gtbbox
-    FP = max(0, numOverThresh - TP)
+    FP = numOverThresh - TP
 
     # calc precision and recall for the picture
     precision = TP / (TP + FP)
