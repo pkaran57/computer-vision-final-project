@@ -3,6 +3,7 @@ import os
 import time
 
 import cv2
+import pandas as pd
 import tensorflow as tf
 import tensorflow_hub as hub
 from object_detection.utils import visualization_utils as viz_utils
@@ -47,7 +48,7 @@ if __name__ == "__main__":
     category_index = get_category_index()
     coco_dataset = load_dataset()
 
-    image_to_model_to_precision_recall_map = dict()
+    model_stats = dict()
 
     for model_name in [
         "Faster R-CNN Inception ResNet V2 1024x1024",
@@ -56,13 +57,15 @@ if __name__ == "__main__":
         "SSD ResNet152 V1 FPN 1024x1024 (RetinaNet152)",
         "Mask R-CNN Inception ResNet V2 1024x1024",
     ]:
+        model_stats[model_name] = list()
+
         hub_model = load_tf_hub_model(model_name)
 
-        num_of_images = 5
+        num_of_images = 30
         img_counter = 0
 
         for sample in coco_dataset:
-            if img_counter == 5:
+            if img_counter == num_of_images:
                 break
 
             original_image = sample["image"]
@@ -71,9 +74,6 @@ if __name__ == "__main__":
                 os.path.join(OUTPUT_DIR, original_image_name),
                 original_image.numpy(),
             )
-
-            if original_image_name not in image_to_model_to_precision_recall_map:
-                image_to_model_to_precision_recall_map[original_image_name] = dict()
 
             model_input = tf.expand_dims(original_image, axis=0)
 
@@ -85,20 +85,24 @@ if __name__ == "__main__":
 
             image_with_predictions = get_image_with_predictions(original_image, result, category_index)
 
-            cv2.imwrite(
-                os.path.join(OUTPUT_DIR, "{}-output-image-{}.png".format(model_name, img_counter)),
-                image_with_predictions,
-            )
+            # only output 5 images with prediction boxes overplayed on top of original images
+            if img_counter < 5:
+                cv2.imwrite(
+                    os.path.join(OUTPUT_DIR, "{}-output-image-{}.png".format(model_name, img_counter)),
+                    image_with_predictions,
+                )
 
             precision, recall = overall(sample["objects"], result, (sample['image'].shape[0], sample['image'].shape[1]))
             print(f'precision = {precision}, recall = {recall}')
 
-            image_to_model_to_precision_recall_map[original_image_name][model_name] = dict()
-
-            image_to_model_to_precision_recall_map[original_image_name][model_name]['inference_time'] = inference_time
-            image_to_model_to_precision_recall_map[original_image_name][model_name]['precision'] = precision
-            image_to_model_to_precision_recall_map[original_image_name][model_name]['recall'] = recall
+            model_stats[model_name].append({
+                'image_name': original_image_name,
+                'inference_time': inference_time,
+                'precision': precision,
+                'recall': recall
+            })
 
             img_counter += 1
 
-    print("Final Result : \n\n", json.dumps(image_to_model_to_precision_recall_map))
+    print("Final Result : \n\n", json.dumps(model_stats))
+    pd.DataFrame(model_stats).to_csv(os.path.join(OUTPUT_DIR, 'model_stats.csv'), index=False)
